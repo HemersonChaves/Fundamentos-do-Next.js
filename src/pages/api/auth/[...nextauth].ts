@@ -1,5 +1,9 @@
+import {query as consulta_bd} from "faunadb";
 import NextAuth from "next-auth";
 import GithubProvider from "next-auth/providers/github";
+import {fauna} from "../../../services/fauna";
+
+
 export default NextAuth({
   // Configure one or more authentication providers
   providers: [
@@ -8,4 +12,18 @@ export default NextAuth({
       clientSecret: process.env.GITHUB_CLIENT_SECRET,
     }),
   ],
+  callbacks: {
+    async signIn({ user, account, profile }) {
+      const { email } = user;
+      
+      await fauna.query(
+        consulta_bd.Create(
+          consulta_bd.Collection("users"),
+          { data:{email}}
+        )
+      )
+      // console.log(user);
+      return true
+    },
+  }
 })
