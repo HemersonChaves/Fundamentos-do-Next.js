@@ -6,6 +6,9 @@ import { stripe } from "../../services/stripe";
 type User = {
     ref: {
         id: string;
+    },
+    data: {
+        stripe_costumer_id: string
     }
 }
 // eslint-disable-next-line import/no-anonymous-default-export
@@ -21,24 +24,32 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
                 )
             )
         );
-        const stripeCustomer = await stripe.customers.create({
-            email: session.user.email,
-            //metadata
-        });
-
-        await fauna.query(
-            consulta_bd.Update(
-                consulta_bd.Ref(consulta_bd.Collection('users'), user.ref.id),
-                {
-                    data: {
-                        stripe_costumer_id: stripeCustomer.id,
-                    }
-                }
-            )
-        )
         
+
+        let custumerId = user.data.stripe_costumer_id;
+
+        if(!custumerId){
+            const stripeCustomer = await stripe.customers.create({
+                email: session.user.email,
+                //metadata
+            });
+
+            await fauna.query(
+                consulta_bd.Update(
+                    consulta_bd.Ref(consulta_bd.Collection('users'), user.ref.id),
+                    {
+                        data: {
+                            stripe_costumer_id: stripeCustomer.id,
+                        }
+                    }
+                )
+            ) 
+            custumerId = stripeCustomer.id;
+        }
+        
+
         const stripeCheckoutSession = await stripe.checkout.sessions.create({
-            customer: stripeCustomer.id,
+            customer: custumerId ,
             payment_method_types: ["card"],
             billing_address_collection: "required",
             line_items: [{
