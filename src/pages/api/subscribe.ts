@@ -1,16 +1,42 @@
 import { NextApiRequest, NextApiResponse } from "next";
+import { query as consulta_bd } from "faunadb";
 import { getSession } from "next-auth/react";
+import { fauna } from "../../services/fauna";
 import { stripe } from "../../services/stripe";
-
+type User = {
+    ref: {
+        id: string;
+    }
+}
 // eslint-disable-next-line import/no-anonymous-default-export
 export default async (req: NextApiRequest, res: NextApiResponse) => {
     if (req.method === "POST") {
         const session = await getSession({ req });
 
+        const user = await fauna.query<User>(
+            consulta_bd.Get(
+                consulta_bd.Match(
+                    consulta_bd.Index("user_by_email"),
+                    consulta_bd.Casefold(session.user.email)
+                )
+            )
+        );
         const stripeCustomer = await stripe.customers.create({
             email: session.user.email,
             //metadata
-        })
+        });
+
+        await fauna.query(
+            consulta_bd.Update(
+                consulta_bd.Ref(consulta_bd.Collection('users'), user.ref.id),
+                {
+                    data: {
+                        stripe_costumer_id: stripeCustomer.id,
+                    }
+                }
+            )
+        )
+        
         const stripeCheckoutSession = await stripe.checkout.sessions.create({
             customer: stripeCustomer.id,
             payment_method_types: ["card"],
@@ -25,7 +51,7 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
             allow_promotion_codes: true,
         })
         const data = { sessionId: stripeCheckoutSession.id }
-        return res.status(200).json(data )
+        return res.status(200).json(data)
 
 
     } else {
