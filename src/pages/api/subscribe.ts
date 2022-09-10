@@ -8,7 +8,7 @@ type User = {
         id: string;
     },
     data: {
-        stripe_costumer_id: string
+        stripe_customer_id: string
     }
 }
 // eslint-disable-next-line import/no-anonymous-default-export
@@ -26,7 +26,7 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
         );
         
 
-        let custumerId = user.data.stripe_costumer_id;
+        let custumerId = user.data.stripe_customer_id;
 
         if(!custumerId){
             const stripeCustomer = await stripe.customers.create({
@@ -39,7 +39,7 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
                     consulta_bd.Ref(consulta_bd.Collection('users'), user.ref.id),
                     {
                         data: {
-                            stripe_costumer_id: stripeCustomer.id,
+                            stripe_customer_id: stripeCustomer.id,
                         }
                     }
                 )
