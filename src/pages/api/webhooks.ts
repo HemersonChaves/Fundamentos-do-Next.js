@@ -2,7 +2,6 @@ import { NextApiRequest, NextApiResponse } from "next"
 import { Readable } from "stream";
 import Stripe from "stripe";
 import { stripe } from "../../services/stripe";
-import Id from "./users/[id]";
 import { saveSubscriptions } from "./_lib/manageSubscription";
 
 async function buffer(readable: Readable) {
