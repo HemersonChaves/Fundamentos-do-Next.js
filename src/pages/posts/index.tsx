@@ -9,17 +9,17 @@ export default function Posts() {
             </Head>
             <main className={styles.container}>
                 <div className={styles.posts}>
-                    <a>
+                    <a href="#">
                         <time>12 de setembro de 2022</time>
                         <strong>Boas práticas para devs em início de carreira</strong>
                         <p>As principais lições e dicas compiladas para quem está começando na programação ou migrando para a área.</p>
                     </a>
-                    <a>
+                    <a href="#">
                         <time>12 de setembro de 2022</time>
                         <strong>Boas práticas para devs em início de carreira</strong>
                         <p>As principais lições e dicas compiladas para quem está começando na programação ou migrando para a área.</p>
                     </a>
-                    <a>
+                    <a href="#">
                         <time>12 de setembro de 2022</time>
                         <strong>Boas práticas para devs em início de carreira</strong>
                         <p>As principais lições e dicas compiladas para quem está começando na programação ou migrando para a área.</p>
