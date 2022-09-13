@@ -7,8 +7,8 @@ export default function Posts() {
             <Head>
                 <title>Posts | Ignews</title>
             </Head>
-            <main>
-                <div>
+            <main className={styles.container}>
+                <div className={styles.posts}>
                     <a>
                         <time>12 de setembro de 2022</time>
                         <strong>Boas práticas para devs em início de carreira</strong>
