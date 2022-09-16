@@ -1,4 +1,4 @@
-import { GetStaticProps } from "next"
+import { GetStaticPaths, GetStaticProps } from "next"
 import { useSession } from "next-auth/react";
 import Head from "next/head";
 import Link from "next/link";
@@ -20,7 +20,7 @@ export default function PostPreview({ post }: PostPreviewProps) {
     const { data: session } = useSession();
     const router = useRouter();
     useEffect(() => {
-        if(session?.activeSubscription){
+        if (session?.activeSubscription) {
             router.push(`/posts/${post.slug}`)
         }
     }, [session])
@@ -36,7 +36,7 @@ export default function PostPreview({ post }: PostPreviewProps) {
                     <time>{post.updatedAt}</time>
                     <div
                         className={`${styles.postContent} ${styles.previewContent}`}
-                        dangerouslySetInnerHTML={{ __html: post.content }} 
+                        dangerouslySetInnerHTML={{ __html: post.content }}
                     />
                     <div className={styles.continueReading}>
                         Wanna continue reading this
@@ -51,10 +51,14 @@ export default function PostPreview({ post }: PostPreviewProps) {
     )
 }
 
-export const getStaticPaths = () => {
+export const getStaticPaths: GetStaticPaths = async () => {
     return {
+        // paths: [
+        //     {
+        //         params: { slug: "boas-praticas-para-devs-em-inicio-de-carreira" }
+        //     }],
         paths: [],
-        fallback: "blocking"
+        fallback: "blocking" // true, false, blocking
     }
 }
 export const getStaticProps: GetStaticProps = async ({ params }) => {
@@ -80,6 +84,7 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
     }
 
     return {
-        props: { post }
+        props: { post },
+        redirect: 60 * 30, // 30 minutos
     }
 }
